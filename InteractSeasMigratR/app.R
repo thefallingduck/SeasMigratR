@@ -11,9 +11,9 @@ library(shiny)
 library(ggplot2)
 
 ui <- pageWithSidebar(
-    headerPanel("Example"),
+    headerPanel("Interactive SeasMigratR"),
     sidebarPanel(
-        radioButtons("color", "Pick Color", c("Pink", "Green", "Blue")),
+        radioButtons("color", "Choose Season", c("Summer", "Winter", "Fall", "Spring")),
         selectInput("shape", "Select Shape:", c("Circle", "Triangle"))
     ),
     mainPanel(
@@ -41,8 +41,11 @@ server = function(input, output){
         ggplot(values$DT, aes(x = x, y = y)) +
             geom_point(aes(color = color,
                            shape = shape), size = 5) +
-            lims(x = c(0, 100), y = c(0, 100)) +
+            geom_line(aes(color = color))+
+            lims(x = c(-5, 45), y = c(500, 0)) +
             theme(legend.position = "bottom") +
+            ylab("Water Depth (m)")+
+            xlab("Water Temp (C)")+
             # include so that colors don't change as more color/shape chosen
             scale_color_discrete(drop = FALSE) +
             scale_shape_discrete(drop = FALSE)
@@ -53,7 +56,7 @@ server = function(input, output){
         # each input is a factor so levels are consistent for plotting characteristics
         add_row <- data.frame(x = input$plot_click$x,
                               y = input$plot_click$y,
-                              color = factor(input$color, levels = c("Pink", "Green", "Blue")),
+                              color = factor(input$color, levels = c("Summer", "Winter", "Fall", "Spring")),
                               shape = factor(input$shape, levels = c("Circle", "Triangle")))
         # add row to the data.frame
         values$DT <- rbind(values$DT, add_row)
