@@ -46,3 +46,38 @@ TimeFilter <- function(x , width = 10, spacing = 15, variation = 2, badProp = .2
   return(out)
   
 }
+
+#' SIMSFilter
+#'
+#' @param x 
+#' @param width 
+#' @param spacing 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' @export
+SIMSFilter <- function(x, width = 10, spacing = 15) {
+  # Function to apply SIMS filter to a dataset
+  #
+  # Args:
+  #   x:        Two-column dataframe with Distance and d18O
+  #   width:    Width of time averaging
+  #   spacing:  Space between middle points of the pits
+  #
+  # Return:
+  #   out:      Filtered dataframe with averaged d18O and corresponding distances
+  
+  x <- as.data.frame(x)
+  colnames(x) <- c("Distance", "d18O")
+  Distance <- seq(from = min(x$Distance), to = max(x$Distance), by = spacing)
+  
+  d18O <- sapply(Distance, function(d) {
+    subset <- x$d18O[x$Distance >= (d - width / 2) & x$Distance <= (d + width / 2)]
+    mean(subset, na.rm = TRUE)
+  })
+  
+  out <- data.frame(Distance = Distance, d18O = d18O)
+  return(out)
+}
